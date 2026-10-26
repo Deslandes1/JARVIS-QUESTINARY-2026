@@ -1,0 +1,148 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. - Multilingual AI</title>
+
+    <!-- ✅ FAVICON LINE ADDED HERE -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <style>
+        :root {
+            --bg-main: #050a14;
+            --panel: rgba(10, 20, 40, 0.85);
+            --accent: #00e5ff;
+            --accent-hover: #00b8cc;
+            --text-main: #e6f1ff;
+            --text-muted: #8892b0;
+            --border: rgba(0, 229, 255, 0.3);
+            --user-msg: #0a4a6e;
+            --ai-msg: #0f2540;
+            --danger: #ff5470;
+            --success: #00ff9d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg-main);
+            background-image: radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(0, 255, 157, 0.05), transparent 25%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: rgba(5, 10, 20, 0.9);
+            border-bottom: 2px solid var(--border);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-left h1 { font-size: 1.8rem; color: var(--accent); letter-spacing: 2px; }
+        .header-right { text-align: right; font-size: 0.85rem; color: var(--text-muted); }
+        .header-right strong { color: var(--accent); }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            overflow-y: auto;
+            gap: 15px;
+        }
+
+        .message {
+            padding: 12px 18px;
+            border-radius: 12px;
+            max-width: 85%;
+            line-height: 1.5;
+            font-size: 1.1rem;
+            animation: fadeIn 0.2s ease;
+            white-space: pre-wrap;
+        }
+
+        .msg-user { background: var(--user-msg); align-self: flex-end; border-bottom-right-radius: 2px; border: 1px solid #1e88e5; }
+        .msg-ai { background: var(--ai-msg); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid var(--border); }
+        .msg-ai strong { color: var(--accent); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .controls {
+            background: var(--panel);
+            border-top: 1px solid var(--border);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 5px;
+        }
+
+        .status-text { color: var(--text-muted); font-size: 0.9rem; font-weight: bold; }
+        .status-text.speaking { color: var(--accent); animation: pulse 1s infinite; }
+        .status-text.listening { color: var(--success); animation: pulse 1.5s infinite; }
+
+        .lang-select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.5);
+            color: var(--accent);
+            border: 1px solid var(--border);
+            outline: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .input-row { display: flex; gap: 10px; width: 100%; max-width: 800px; }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 2px solid var(--border);
+            background: rgba(0,0,0,0.4);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+        }
+        input[type="text"]:focus { border-color: var(--accent); }
+
+        button {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background: var(--accent-hover); }
+        
+        .mic-btn {
+            width: 70px; height: 70px; border-radius: 50%; font-size: 1.8rem;
+            display: flex; justify-content: center; align-items: center;
+            transition: all 0.3s ease; margin: 5px 0;
+        }
+        .mic-btn.active { background: var(--danger); color: white; animation: pulse 1.5s infinite; }
+        
+        .bottom-buttons { display: flex; gap: 10px; margin-top: 5px;}
+        .stop-btn { font-size: 0.8rem; padding: 6px 12px; border-radius: 15px; background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
