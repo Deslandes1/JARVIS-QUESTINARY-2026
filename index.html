@@ -89,13 +89,23 @@
         }
         .header-left h1 { font-size: 1.7rem; color: var(--accent); letter-spacing: 2px; }
         .header-left p { font-size: .72rem; color: var(--text-muted); letter-spacing: .5px; margin-top: 2px; }
-        .header-right { text-align: right; font-size: .8rem; color: var(--text-muted); line-height: 1.35; }
+        .header-right { text-align: right; font-size: .8rem; color: var(--text-muted); line-height: 1.45; }
         .header-right strong { color: var(--accent); }
         .edu-pill {
             display: inline-block; margin-top: 4px; font-size: .65rem; font-weight: 800;
             background: linear-gradient(135deg,#ffc72c,#ff8a00); color:#3b2a00;
             padding: 3px 10px; border-radius: 12px; letter-spacing: .5px;
         }
+        .contact-line {
+            display: inline-block;
+            margin-top: 3px;
+            font-size: .7rem;
+            font-weight: 700;
+            color: #7a5200;
+            text-decoration: none;
+            transition: color .15s;
+        }
+        .contact-line:hover { color: var(--accent); text-decoration: underline; }
 
         /* ================= LAYOUT ================= */
         .main-area {
@@ -156,7 +166,6 @@
         .robot-label.thinking { background: #f59e0b; border-color: #d97706; color: #fff; animation: labelPulse .5s ease-in-out infinite; }
         @keyframes labelPulse { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
 
-        /* ---- Robot animations ---- */
         #robotBody .eye-bar { animation: eyeIdle 3.6s ease-in-out infinite; }
         #robotBody .core { animation: coreIdle 2.6s ease-in-out infinite; }
         #robotBody .halo-ring { transform-origin: 120px 250px; animation: haloSpin 40s linear infinite; }
@@ -341,6 +350,7 @@
             .robot-label { font-size: 10px; padding: 5px 12px; }
             .header-left h1 { font-size: 1.25rem; }
             .header-right { font-size: .68rem; }
+            .contact-line { font-size: .65rem; }
             .chat-container { padding: 12px; }
             .message { font-size: .98rem; max-width: 94%; }
             .mic-btn { width: 54px; height: 54px; font-size: 1.4rem; }
@@ -361,12 +371,13 @@
             <strong>Utilisateur :</strong> Gesner Deslandes<br>
             Développeur Logiciel · Haïti
             <br><span class="edu-pill">🎓 MODE ÉDUCATION</span>
+            <br><a class="contact-line" href="tel:+50947385663">📞 (509) 4738-5663</a>
+            <br><a class="contact-line" href="mailto:deslandes78@gmail.com">✉️ deslandes78@gmail.com</a>
         </div>
     </header>
 
     <div class="main-area">
 
-        <!-- ============ GOLDEN ROBOCOP-STYLE HUMANOID ============ -->
         <aside class="robot-panel">
             <svg id="robotBody" class="robot-svg" viewBox="0 0 240 500" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -410,7 +421,6 @@
                         fill="none" stroke="#FFD24D" stroke-width="1.6"
                         stroke-dasharray="7 11" opacity="0.5"/>
 
-                <!-- LEGS -->
                 <rect x="88"  y="252" width="24" height="92" rx="11" fill="url(#goldLimb)"  stroke="#8A6400" stroke-width="2"/>
                 <rect x="128" y="252" width="24" height="92" rx="11" fill="url(#goldLimbR)" stroke="#8A6400" stroke-width="2"/>
                 <circle cx="100" cy="350" r="11" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
@@ -422,12 +432,10 @@
                 <rect x="82"  y="452" width="36" height="6" rx="3" fill="#5C3F00"/>
                 <rect x="122" y="452" width="36" height="6" rx="3" fill="#5C3F00"/>
 
-                <!-- HIPS / BELT -->
                 <rect x="84" y="228" width="72" height="32" rx="13" fill="url(#goldBody)" stroke="#8A6400" stroke-width="2.5"/>
                 <rect x="94" y="256" width="52" height="11" rx="5" fill="url(#goldDark)"/>
                 <circle cx="120" cy="261" r="6" fill="#FFE066" stroke="#8A6400" stroke-width="1.5"/>
 
-                <!-- TORSO -->
                 <path d="M76 132 Q120 112 164 132 L172 200 Q172 236 120 240 Q68 236 68 200 Z"
                       fill="url(#goldBody)" stroke="#8A6400" stroke-width="2.8"/>
                 <path d="M84 140 Q120 126 156 140" stroke="#FFF4C2" stroke-width="3.5" fill="none" opacity="0.9"/>
@@ -435,35 +443,29 @@
                 <path d="M96 218 h48" stroke="#8A6400" stroke-width="2" opacity="0.35"/>
                 <path d="M100 226 h40" stroke="#8A6400" stroke-width="2" opacity="0.25"/>
 
-                <!-- chest core -->
                 <circle class="core" cx="120" cy="172" r="18" fill="url(#coreGrad)"/>
                 <circle cx="120" cy="172" r="18" fill="none" stroke="#FFB300" stroke-width="2.5" opacity="0.9"/>
                 <circle cx="120" cy="172" r="8" fill="#FFF9D6"/>
 
-                <!-- SHOULDERS -->
                 <circle cx="64"  cy="132" r="20" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
                 <circle cx="176" cy="132" r="20" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
                 <circle cx="64"  cy="132" r="8"  fill="#FFD24D" opacity="0.7"/>
                 <circle cx="176" cy="132" r="8"  fill="#FFD24D" opacity="0.7"/>
 
-                <!-- LEFT ARM -->
                 <rect x="52" y="142" width="20" height="66" rx="10" fill="url(#goldLimb)" stroke="#8A6400" stroke-width="2"/>
                 <circle cx="62" cy="212" r="10" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
                 <rect x="52" y="218" width="18" height="60" rx="9"  fill="url(#goldLimb)" stroke="#8A6400" stroke-width="2"/>
                 <rect x="50" y="278" width="22" height="20" rx="8"  fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
                 <path d="M54 284 h14 M54 290 h14" stroke="#6B4A00" stroke-width="1.6"/>
 
-                <!-- RIGHT ARM -->
                 <rect x="168" y="142" width="20" height="66" rx="10" fill="url(#goldLimbR)" stroke="#8A6400" stroke-width="2"/>
                 <circle cx="178" cy="212" r="10" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
                 <rect x="170" y="218" width="18" height="60" rx="9"  fill="url(#goldLimbR)" stroke="#8A6400" stroke-width="2"/>
                 <rect x="168" y="278" width="22" height="20" rx="8"  fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
                 <path d="M172 284 h14 M172 290 h14" stroke="#6B4A00" stroke-width="1.6"/>
 
-                <!-- NECK -->
                 <rect x="108" y="104" width="24" height="18" rx="7" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
 
-                <!-- HEAD -->
                 <path d="M86 62 Q86 26 120 26 Q154 26 154 62 L154 90 Q154 106 120 106 Q86 106 86 90 Z"
                       fill="url(#goldBody)" stroke="#8A6400" stroke-width="2.8"/>
                 <rect x="80" y="62" width="10" height="26" rx="4" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="1.5"/>
@@ -485,7 +487,6 @@
             <div id="robotLabel" class="robot-label">● EN LIGNE</div>
         </aside>
 
-        <!-- ============ CHAT ============ -->
         <div class="chat-container" id="chatBox">
             <div class="message msg-ai">
                 <strong>J.A.R.V.I.S. :</strong> Bonjour Monsieur Gesner. Je suis prêt à aider les élèves haïtiens à apprendre. Choisissez une matière ci-dessous ou posez une question. / Hello Gesner. Ready to help Haitian students learn. Pick a subject below or ask a question.
@@ -494,7 +495,6 @@
 
     </div>
 
-    <!-- ============ CONTROLS ============ -->
     <div class="controls">
 
         <div class="subject-row">
@@ -556,7 +556,6 @@
             'es-ES': 'Spanish'
         };
 
-        /* ================= ROBOT STATE ================= */
         function setRobotState(state) {
             robotBody.classList.remove('speaking', 'listening', 'thinking');
             robotLabel.classList.remove('speaking', 'listening', 'thinking');
@@ -578,7 +577,6 @@
             }
         }
 
-        /* ================= SUBJECT SHORTCUTS ================= */
         const SUBJECTS = {
             curriculum: {
                 display: "🇭🇹 Programme d'Haïti (MENFP) — résumé par niveau",
@@ -621,7 +619,6 @@
             processCommand(s.prompt);
         }
 
-        /* ================= IMAGES TOGGLE ================= */
         function toggleImages() {
             imagesOn = !imagesOn;
             imageBtn.classList.toggle('on', imagesOn);
@@ -635,7 +632,6 @@
                 </div>`;
         }
 
-        /* ================= SPEECH RECOGNITION ================= */
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
         if (SpeechRecognition) {
@@ -734,7 +730,6 @@
             processCommand(text);
         }
 
-        /* ================= AI CORE ================= */
         function buildSystemPrompt(langName) {
             return `You are J.A.R.V.I.S., a golden humanoid teaching robot built by Gesner Deslandes, a software developer from Haiti.
 Your mission is EDUCATION for Haitian students: help them master the primary school curriculum of the Haitian Ministry of Education (MENFP) and pass the official exams (Certificat d'Études Primaires, 6ème AF, 9ème AF, Bac).
@@ -802,7 +797,6 @@ Rules:
             }
         }
 
-        /* ================= DIAGRAM / IMAGE GENERATION ================= */
         function addIllustration(container, description) {
             const holder = document.createElement('div');
             holder.className = 'diagram-holder';
@@ -840,7 +834,6 @@ Rules:
             img.src = url;
         }
 
-        /* ================= MESSAGES ================= */
         function addMessage(text, sender) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message msg-${sender}`;
@@ -854,7 +847,6 @@ Rules:
             return id;
         }
 
-        /* ================= TEXT TO SPEECH ================= */
         function speakText(text, langCode) {
             const cleanText = text.replace(/[*#_]/g, '').replace(/DIAGRAM\s*:.*/i, '');
             const utterance = new SpeechSynthesisUtterance(cleanText);
