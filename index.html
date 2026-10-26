@@ -43,11 +43,168 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            flex-shrink: 0;
         }
         .header-left h1 { font-size: 1.8rem; color: var(--accent); letter-spacing: 2px; }
         .header-right { text-align: right; font-size: 0.85rem; color: var(--text-muted); }
         .header-right strong { color: var(--accent); }
 
+        /* === MAIN AREA: robot sidebar + chat === */
+        .main-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* === ROBOT PANEL === */
+        .robot-panel {
+            width: 260px;
+            flex-shrink: 0;
+            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
+            border-right: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 15px;
+            gap: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        .robot-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,102,204,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,102,204,0.05) 1px, transparent 1px);
+            background-size: 22px 22px;
+            pointer-events: none;
+        }
+
+        .robot-svg {
+            width: 100%;
+            max-width: 220px;
+            height: auto;
+            display: block;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 8px 20px rgba(0,102,204,0.25));
+            transition: filter 0.3s ease;
+        }
+
+        .robot-label {
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: var(--accent);
+            background: #ffffff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--accent);
+            box-shadow: 0 2px 8px rgba(0,102,204,0.2);
+            transition: all 0.3s ease;
+            z-index: 1;
+            white-space: nowrap;
+        }
+        .robot-label.speaking {
+            background: var(--accent);
+            color: #ffffff;
+            animation: labelPulse 0.8s ease-in-out infinite;
+        }
+        .robot-label.listening {
+            background: var(--success);
+            border-color: var(--success);
+            color: #ffffff;
+            animation: labelPulse 1.5s ease-in-out infinite;
+        }
+        .robot-label.thinking {
+            background: #f59e0b;
+            border-color: #f59e0b;
+            color: #ffffff;
+            animation: labelPulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes labelPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* === ROBOT SVG ANIMATIONS === */
+        .antenna-ball {
+            animation: pulseAntenna 2s ease-in-out infinite;
+        }
+        .eye {
+            animation: eyeIdle 4s ease-in-out infinite;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        .status-ring {
+            animation: rotateRing 30s linear infinite;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+
+        .robot-svg.speaking {
+            filter: drop-shadow(0 8px 30px rgba(0,102,204,0.55));
+        }
+        .robot-svg.speaking .eye {
+            animation: eyeSpeak 0.3s ease-in-out infinite;
+        }
+        .robot-svg.speaking .mouth-group {
+            animation: mouthSpeak 0.22s ease-in-out infinite;
+            transform-origin: center;
+            transform-box: fill-box;
+        }
+        .robot-svg.speaking .antenna-ball {
+            animation: antennaSpeak 0.4s ease-in-out infinite;
+        }
+        .robot-svg.speaking .status-ring {
+            animation: rotateRing 2.5s linear infinite;
+            stroke-width: 3;
+            opacity: 1;
+            filter: drop-shadow(0 0 10px #00e5ff);
+        }
+
+        .robot-svg.listening .eye {
+            animation: eyeListen 1.5s ease-in-out infinite;
+        }
+        .robot-svg.listening .status-ring {
+            animation: rotateRing 8s linear infinite;
+            stroke: #16a34a;
+            opacity: 0.9;
+        }
+
+        @keyframes pulseAntenna {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        @keyframes eyeIdle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(0.97); }
+        }
+        @keyframes eyeSpeak {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.12); filter: brightness(1.7); }
+        }
+        @keyframes eyeListen {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.5) hue-rotate(-20deg); }
+        }
+        @keyframes mouthSpeak {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(2.8); }
+        }
+        @keyframes antennaSpeak {
+            0%, 100% { fill: #00e5ff; }
+            50% { fill: #ffffff; }
+        }
+        @keyframes rotateRing {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* === CHAT === */
         .chat-container {
             flex: 1;
             display: flex;
@@ -70,7 +227,6 @@
             white-space: pre-wrap;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
-
         .msg-user {
             background: var(--user-msg);
             color: #0c2a4d;
@@ -78,7 +234,6 @@
             border: 1px solid var(--user-border);
             border-bottom-right-radius: 2px;
         }
-
         .msg-ai {
             background: var(--ai-msg);
             color: #1e293b;
@@ -86,7 +241,6 @@
             border: 1px solid var(--ai-border);
             border-bottom-left-radius: 2px;
         }
-
         .msg-ai strong { color: var(--accent); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -100,8 +254,8 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+            flex-shrink: 0;
         }
-
         .status-row {
             display: flex;
             justify-content: space-between;
@@ -110,11 +264,9 @@
             max-width: 800px;
             margin-bottom: 5px;
         }
-
         .status-text { color: var(--text-muted); font-size: 0.9rem; font-weight: bold; }
         .status-text.speaking { color: var(--accent); animation: pulse 1s infinite; }
         .status-text.listening { color: var(--success); animation: pulse 1.5s infinite; }
-
         .lang-select {
             padding: 8px 12px;
             border-radius: 8px;
@@ -125,9 +277,7 @@
             font-weight: bold;
             cursor: pointer;
         }
-
         .input-row { display: flex; gap: 10px; width: 100%; max-width: 800px; }
-
         input[type="text"] {
             flex: 1;
             padding: 12px 20px;
@@ -140,7 +290,6 @@
         }
         input[type="text"]:focus { border-color: var(--accent); }
         input[type="text"]::placeholder { color: #94a3b8; }
-
         button {
             background: var(--accent);
             color: #ffffff;
@@ -152,7 +301,6 @@
             transition: 0.2s;
         }
         button:hover { background: var(--accent-hover); }
-
         .mic-btn {
             width: 70px; height: 70px; border-radius: 50%; font-size: 1.8rem;
             display: flex; justify-content: center; align-items: center;
@@ -167,7 +315,6 @@
             animation: pulse 1.5s infinite;
             box-shadow: 0 4px 14px rgba(220,38,38,0.5);
         }
-
         .bottom-buttons { display: flex; gap: 10px; margin-top: 5px;}
         .stop-btn {
             font-size: 0.8rem;
@@ -180,8 +327,24 @@
             cursor: pointer;
         }
         .stop-btn:hover { background: #fee2e2; }
-
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* === MOBILE === */
+        @media (max-width: 700px) {
+            .main-area { flex-direction: column; }
+            .robot-panel {
+                width: 100%;
+                flex-direction: row;
+                padding: 12px 20px;
+                border-right: none;
+                border-bottom: 2px solid var(--border);
+                gap: 15px;
+                justify-content: flex-start;
+                align-items: center;
+            }
+            .robot-svg { max-width: 95px; }
+            .robot-label { font-size: 11px; padding: 5px 12px; }
+        }
     </style>
 </head>
 <body>
@@ -196,10 +359,80 @@
         </div>
     </header>
 
-    <div class="chat-container" id="chatBox">
-        <div class="message msg-ai">
-            <strong>J.A.R.V.I.S.:</strong> Systems online. Say "Jarvis" to wake me up. / Systèmes en ligne. Dites "Jarvis".
+    <div class="main-area">
+
+        <!-- === ROBOT HEAD SIDEBAR === -->
+        <aside class="robot-panel">
+            <svg id="robotHead" class="robot-svg" viewBox="0 0 260 320" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="eyeGlow">
+                        <stop offset="0%" stop-color="#00e5ff"/>
+                        <stop offset="100%" stop-color="#0066cc" stop-opacity="0.4"/>
+                    </radialGradient>
+                    <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#f8fafc"/>
+                        <stop offset="100%" stop-color="#94a3b8"/>
+                    </linearGradient>
+                    <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#00e5ff"/>
+                        <stop offset="100%" stop-color="#0066cc"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Status ring behind head -->
+                <circle class="status-ring" cx="130" cy="160" r="130"
+                        fill="none" stroke="url(#ringGrad)" stroke-width="2"
+                        stroke-dasharray="8 8" opacity="0.4"/>
+
+                <!-- Antenna -->
+                <circle class="antenna-ball" cx="130" cy="22" r="9" fill="#00e5ff"/>
+                <line x1="130" y1="31" x2="130" y2="50" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+
+                <!-- Head -->
+                <path d="M 65 65 Q 65 45 130 45 Q 195 45 195 65 L 195 190 Q 195 225 130 225 Q 65 225 65 190 Z"
+                      fill="url(#headGrad)" stroke="#0066cc" stroke-width="4" stroke-linejoin="round"/>
+
+                <!-- Face plate -->
+                <rect x="85" y="75" width="90" height="125" rx="28" fill="#0f172a" stroke="#0066cc" stroke-width="2"/>
+
+                <!-- Eyes -->
+                <circle class="eye" cx="112" cy="115" r="15" fill="url(#eyeGlow)"/>
+                <circle class="eye" cx="148" cy="115" r="15" fill="url(#eyeGlow)"/>
+                <circle cx="112" cy="115" r="5" fill="#ffffff" opacity="0.9"/>
+                <circle cx="148" cy="115" r="5" fill="#ffffff" opacity="0.9"/>
+
+                <!-- Mouth -->
+                <g class="mouth-group">
+                    <rect class="mouth" x="108" y="160" width="44" height="6" rx="3" fill="#00e5ff"/>
+                    <rect x="108" y="170" width="44" height="4" rx="2" fill="#0066cc" opacity="0.55"/>
+                    <rect x="108" y="178" width="44" height="4" rx="2" fill="#0066cc" opacity="0.3"/>
+                </g>
+
+                <!-- Ears -->
+                <rect x="48" y="105" width="20" height="70" rx="10" fill="#64748b"/>
+                <rect x="192" y="105" width="20" height="70" rx="10" fill="#64748b"/>
+                <rect x="52" y="115" width="12" height="50" rx="6" fill="#94a3b8"/>
+                <rect x="196" y="115" width="12" height="50" rx="6" fill="#94a3b8"/>
+
+                <!-- Neck -->
+                <rect x="105" y="225" width="50" height="22" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/>
+
+                <!-- Shoulders -->
+                <ellipse cx="130" cy="265" rx="85" ry="22" fill="#0066cc"/>
+                <ellipse cx="130" cy="265" rx="85" ry="22" fill="none" stroke="#004a99" stroke-width="3"/>
+                <ellipse cx="130" cy="260" rx="60" ry="14" fill="#0080ff" opacity="0.5"/>
+            </svg>
+
+            <div id="robotLabel" class="robot-label">● ONLINE</div>
+        </aside>
+
+        <!-- === CHAT === -->
+        <div class="chat-container" id="chatBox">
+            <div class="message msg-ai">
+                <strong>J.A.R.V.I.S.:</strong> Systems online. Say "Jarvis" to wake me up. / Systèmes en ligne. Dites "Jarvis".
+            </div>
         </div>
+
     </div>
 
     <div class="controls">
@@ -233,6 +466,8 @@
         const micBtn = document.getElementById('micBtn');
         const stopBtn = document.getElementById('stopBtn');
         const langSelect = document.getElementById('langSelect');
+        const robotHead = document.getElementById('robotHead');
+        const robotLabel = document.getElementById('robotLabel');
 
         let isAlwaysListening = false;
         let recognition = null;
@@ -246,6 +481,27 @@
             'es-ES': 'Spanish',
             'ht-HT': 'Haitian Creole'
         };
+
+        // === ROBOT STATE ===
+        function setRobotState(state) {
+            robotHead.classList.remove('speaking', 'listening');
+            robotLabel.classList.remove('speaking', 'listening', 'thinking');
+
+            if (state === 'speaking') {
+                robotHead.classList.add('speaking');
+                robotLabel.textContent = '🔊 SPEAKING';
+                robotLabel.classList.add('speaking');
+            } else if (state === 'listening') {
+                robotHead.classList.add('listening');
+                robotLabel.textContent = '🎤 LISTENING';
+                robotLabel.classList.add('listening');
+            } else if (state === 'thinking') {
+                robotLabel.textContent = '💭 THINKING...';
+                robotLabel.classList.add('thinking');
+            } else {
+                robotLabel.textContent = '● ONLINE';
+            }
+        }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -261,6 +517,7 @@
                 micBtn.innerText = "🛑";
                 statusText.innerText = "Listening... Say 'Jarvis'";
                 statusText.className = "status-text listening";
+                setRobotState('listening');
             };
 
             recognition.onresult = (event) => {
@@ -276,7 +533,7 @@
                                          langSelect.value === 'es-ES' ? "¿Sí, señor?" :
                                          langSelect.value === 'ht-HT' ? "Wi, Msye?" : "Yes, Sir?";
                         addMessage(greeting, 'user');
-                        speakText(greeting);
+                        speakText(greeting, langSelect.value);
                         return;
                     }
 
@@ -293,6 +550,7 @@
                     micBtn.innerText = "🎤";
                     statusText.innerText = "Microphone Offline.";
                     statusText.className = "status-text";
+                    setRobotState('idle');
                 }
             };
 
@@ -301,6 +559,7 @@
                 if(e.error === 'not-allowed') {
                     isAlwaysListening = false;
                     statusText.innerText = "Microphone permission denied.";
+                    setRobotState('idle');
                 }
             };
         }
@@ -313,6 +572,7 @@
                 statusText.className = "status-text";
                 micBtn.classList.remove('active');
                 micBtn.innerText = "🎤";
+                setRobotState('idle');
             } else {
                 stopSpeaking();
                 recognition.start();
@@ -345,6 +605,7 @@
             statusText.innerText = "Processing...";
             statusText.className = "status-text";
             stopBtn.style.display = 'none';
+            setRobotState('thinking');
 
             const typingId = addMessage("...", 'ai');
             const targetLang = langSelect.value;
@@ -374,6 +635,7 @@
                 document.getElementById(typingId).remove();
                 addMessage("Connection error.", 'ai');
                 statusText.innerText = "Error.";
+                setRobotState(isAlwaysListening ? 'listening' : 'idle');
             }
         }
 
@@ -397,11 +659,9 @@
             const voices = window.speechSynthesis.getVoices();
 
             let bestVoice = voices.find(v => v.lang === langCode);
-
             if (!bestVoice && langCode === 'ht-HT') {
                 bestVoice = voices.find(v => v.lang === 'fr-FR') || voices.find(v => v.lang.startsWith('en'));
             }
-
             if (bestVoice) utterance.voice = bestVoice;
 
             utterance.rate = 1.15;
@@ -409,15 +669,18 @@
             utterance.onstart = () => {
                 statusText.innerText = "🔊 J.A.R.V.I.S. is speaking...";
                 statusText.className = "status-text speaking";
+                setRobotState('speaking');
             };
 
             utterance.onend = () => {
                 if (isAlwaysListening) {
                     statusText.innerText = "Listening... Say 'Jarvis'";
                     statusText.className = "status-text listening";
+                    setRobotState('listening');
                 } else {
                     statusText.innerText = "Ready.";
                     statusText.className = "status-text";
+                    setRobotState('idle');
                 }
             };
 
@@ -429,9 +692,11 @@
             if (isAlwaysListening) {
                 statusText.innerText = "Listening... Say 'Jarvis'";
                 statusText.className = "status-text listening";
+                setRobotState('listening');
             } else {
                 statusText.innerText = "Ready.";
                 statusText.className = "status-text";
+                setRobotState('idle');
             }
         }
     </script>
