@@ -1,31 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>J.A.R.V.I.S. - Multilingual AI</title>
 
-    <!-- ✅ FAVICON LINE ADDED HERE -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
     <style>
         :root {
-            --bg-main: #050a14;
-            --panel: rgba(10, 20, 40, 0.85);
-            --accent: #00e5ff;
-            --accent-hover: #00b8cc;
-            --text-main: #e6f1ff;
-            --text-muted: #8892b0;
-            --border: rgba(0, 229, 255, 0.3);
-            --user-msg: #0a4a6e;
-            --ai-msg: #0f2540;
-            --danger: #ff5470;
-            --success: #00ff9d;
+            --bg-main: #f4f7fb;
+            --panel: #ffffff;
+            --accent: #0066cc;
+            --accent-hover: #0052a3;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #cbd5e1;
+            --user-msg: #dbeafe;
+            --user-border: #3b82f6;
+            --ai-msg: #f1f5f9;
+            --ai-border: #94a3b8;
+            --danger: #dc2626;
+            --success: #16a34a;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         body {
             background-color: var(--bg-main);
-            background-image: radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(0, 255, 157, 0.05), transparent 25%);
             color: var(--text-main);
             height: 100vh;
             display: flex;
@@ -34,12 +36,13 @@
         }
 
         header {
-            background: rgba(5, 10, 20, 0.9);
-            border-bottom: 2px solid var(--border);
+            background: #ffffff;
+            border-bottom: 2px solid var(--accent);
             padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         .header-left h1 { font-size: 1.8rem; color: var(--accent); letter-spacing: 2px; }
         .header-right { text-align: right; font-size: 0.85rem; color: var(--text-muted); }
@@ -65,10 +68,25 @@
             font-size: 1.1rem;
             animation: fadeIn 0.2s ease;
             white-space: pre-wrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .msg-user { background: var(--user-msg); align-self: flex-end; border-bottom-right-radius: 2px; border: 1px solid #1e88e5; }
-        .msg-ai { background: var(--ai-msg); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid var(--border); }
+        .msg-user {
+            background: var(--user-msg);
+            color: #0c2a4d;
+            align-self: flex-end;
+            border: 1px solid var(--user-border);
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-ai {
+            background: var(--ai-msg);
+            color: #1e293b;
+            align-self: flex-start;
+            border: 1px solid var(--ai-border);
+            border-bottom-left-radius: 2px;
+        }
+
         .msg-ai strong { color: var(--accent); }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -81,6 +99,7 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
         }
 
         .status-row {
@@ -99,9 +118,9 @@
         .lang-select {
             padding: 8px 12px;
             border-radius: 8px;
-            background: rgba(0,0,0,0.5);
+            background: #ffffff;
             color: var(--accent);
-            border: 1px solid var(--border);
+            border: 2px solid var(--accent);
             outline: none;
             font-weight: bold;
             cursor: pointer;
@@ -114,16 +133,17 @@
             padding: 12px 20px;
             border-radius: 30px;
             border: 2px solid var(--border);
-            background: rgba(0,0,0,0.4);
+            background: #ffffff;
             color: var(--text-main);
             font-size: 1rem;
             outline: none;
         }
         input[type="text"]:focus { border-color: var(--accent); }
+        input[type="text"]::placeholder { color: #94a3b8; }
 
         button {
             background: var(--accent);
-            color: #000;
+            color: #ffffff;
             border: none;
             padding: 12px 20px;
             border-radius: 30px;
@@ -132,17 +152,288 @@
             transition: 0.2s;
         }
         button:hover { background: var(--accent-hover); }
-        
+
         .mic-btn {
             width: 70px; height: 70px; border-radius: 50%; font-size: 1.8rem;
             display: flex; justify-content: center; align-items: center;
             transition: all 0.3s ease; margin: 5px 0;
+            background: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(0,102,204,0.4);
         }
-        .mic-btn.active { background: var(--danger); color: white; animation: pulse 1.5s infinite; }
-        
+        .mic-btn.active {
+            background: var(--danger);
+            color: #ffffff;
+            animation: pulse 1.5s infinite;
+            box-shadow: 0 4px 14px rgba(220,38,38,0.5);
+        }
+
         .bottom-buttons { display: flex; gap: 10px; margin-top: 5px;}
-        .stop-btn { font-size: 0.8rem; padding: 6px 12px; border-radius: 15px; background: transparent; border: 1px solid var(--danger); color: var(--danger); }
+        .stop-btn {
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 15px;
+            background: #ffffff;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .stop-btn:hover { background: #fee2e2; }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <h1>J.A.R.V.I.S.</h1>
+        </div>
+        <div class="header-right">
+            <strong>User:</strong> Gesner Deslandes<br>
+            Software Engineer · Global Technology
+        </div>
+    </header>
+
+    <div class="chat-container" id="chatBox">
+        <div class="message msg-ai">
+            <strong>J.A.R.V.I.S.:</strong> Systems online. Say "Jarvis" to wake me up. / Systèmes en ligne. Dites "Jarvis".
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="status-row">
+            <div class="status-text" id="statusText">Click Mic to start Always-On listening.</div>
+
+            <select id="langSelect" class="lang-select" onchange="changeLanguage()">
+                <option value="en-US">🇬🇧 English</option>
+                <option value="fr-FR">🇫🇷 Français</option>
+                <option value="es-ES">🇪🇸 Español</option>
+                <option value="ht-HT">🇭🇹 Kreyòl Ayisyen</option>
+            </select>
+        </div>
+
+        <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎤</button>
+
+        <div class="input-row">
+            <input type="text" id="userInput" placeholder="Type your command here..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendTypedMessage()">Send</button>
+        </div>
+
+        <div class="bottom-buttons">
+            <button class="stop-btn" id="stopBtn" onclick="stopSpeaking()" style="display: none;">🔇 Stop Voice</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const statusText = document.getElementById('statusText');
+        const micBtn = document.getElementById('micBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const langSelect = document.getElementById('langSelect');
+
+        let isAlwaysListening = false;
+        let recognition = null;
+
+        window.speechSynthesis.getVoices();
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+
+        const langNames = {
+            'en-US': 'English',
+            'fr-FR': 'French',
+            'es-ES': 'Spanish',
+            'ht-HT': 'Haitian Creole'
+        };
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.lang = langSelect.value;
+
+            recognition.onstart = () => {
+                isAlwaysListening = true;
+                micBtn.classList.add('active');
+                micBtn.innerText = "🛑";
+                statusText.innerText = "Listening... Say 'Jarvis'";
+                statusText.className = "status-text listening";
+            };
+
+            recognition.onresult = (event) => {
+                const lastResultIndex = event.results.length - 1;
+                const transcript = event.results[lastResultIndex][0].transcript.trim();
+                const lowerTranscript = transcript.toLowerCase();
+
+                if (lowerTranscript.includes("jarvis")) {
+                    let command = transcript.replace(/jarvis/gi, "").trim();
+
+                    if (command === "") {
+                        const greeting = langSelect.value === 'fr-FR' ? "Oui, Monsieur ?" :
+                                         langSelect.value === 'es-ES' ? "¿Sí, señor?" :
+                                         langSelect.value === 'ht-HT' ? "Wi, Msye?" : "Yes, Sir?";
+                        addMessage(greeting, 'user');
+                        speakText(greeting);
+                        return;
+                    }
+
+                    addMessage(command, 'user');
+                    processCommand(command);
+                }
+            };
+
+            recognition.onend = () => {
+                if (isAlwaysListening) {
+                    recognition.start();
+                } else {
+                    micBtn.classList.remove('active');
+                    micBtn.innerText = "🎤";
+                    statusText.innerText = "Microphone Offline.";
+                    statusText.className = "status-text";
+                }
+            };
+
+            recognition.onerror = (e) => {
+                console.error(e);
+                if(e.error === 'not-allowed') {
+                    isAlwaysListening = false;
+                    statusText.innerText = "Microphone permission denied.";
+                }
+            };
+        }
+
+        function toggleMic() {
+            if (isAlwaysListening) {
+                isAlwaysListening = false;
+                recognition.stop();
+                statusText.innerText = "Microphone Offline.";
+                statusText.className = "status-text";
+                micBtn.classList.remove('active');
+                micBtn.innerText = "🎤";
+            } else {
+                stopSpeaking();
+                recognition.start();
+            }
+        }
+
+        function changeLanguage() {
+            const newLang = langSelect.value;
+            if (recognition) {
+                recognition.lang = newLang;
+            }
+            if (isAlwaysListening) {
+                recognition.stop();
+                setTimeout(() => { if(isAlwaysListening) recognition.start(); }, 300);
+            }
+        }
+
+        function handleKeyPress(e) { if (e.key === 'Enter') sendTypedMessage(); }
+
+        function sendTypedMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            addMessage(text, 'user');
+            userInput.value = '';
+            processCommand(text);
+        }
+
+        async function processCommand(commandText) {
+            stopSpeaking();
+            statusText.innerText = "Processing...";
+            statusText.className = "status-text";
+            stopBtn.style.display = 'none';
+
+            const typingId = addMessage("...", 'ai');
+            const targetLang = langSelect.value;
+            const targetLangName = langNames[targetLang];
+
+            try {
+                const systemPrompt = `You are J.A.R.V.I.S. talking to your boss, Gesner Deslandes. Keep your answer EXTREMELY brief (1 to 2 sentences max). YOU MUST REPLY ENTIRELY IN ${targetLangName.toUpperCase()}. Do not use markdown formatting.`;
+                const fullPrompt = `${systemPrompt}\n\nGesner: ${commandText}\nJ.A.R.V.I.S.:`;
+
+                const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}`);
+                const aiText = await response.text();
+
+                document.getElementById(typingId).remove();
+
+                const msgId = 'ai-msg-' + Date.now();
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message msg-ai`;
+                msgDiv.id = msgId;
+                msgDiv.innerHTML = `<strong>J.A.R.V.I.S.:</strong><br>${aiText}`;
+                chatBox.appendChild(msgDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                speakText(aiText, targetLang);
+                stopBtn.style.display = 'inline-block';
+
+            } catch (error) {
+                document.getElementById(typingId).remove();
+                addMessage("Connection error.", 'ai');
+                statusText.innerText = "Error.";
+            }
+        }
+
+        function addMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message msg-${sender}`;
+            const id = 'msg-' + Date.now();
+            msgDiv.id = id;
+            msgDiv.innerHTML = sender === 'ai' && text !== "..." ? `<strong>J.A.R.V.I.S.:</strong><br>${text}` : text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return id;
+        }
+
+        function speakText(text, langCode) {
+            const cleanText = text.replace(/[*#_]/g, '');
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+
+            utterance.lang = langCode;
+
+            const voices = window.speechSynthesis.getVoices();
+
+            let bestVoice = voices.find(v => v.lang === langCode);
+
+            if (!bestVoice && langCode === 'ht-HT') {
+                bestVoice = voices.find(v => v.lang === 'fr-FR') || voices.find(v => v.lang.startsWith('en'));
+            }
+
+            if (bestVoice) utterance.voice = bestVoice;
+
+            utterance.rate = 1.15;
+
+            utterance.onstart = () => {
+                statusText.innerText = "🔊 J.A.R.V.I.S. is speaking...";
+                statusText.className = "status-text speaking";
+            };
+
+            utterance.onend = () => {
+                if (isAlwaysListening) {
+                    statusText.innerText = "Listening... Say 'Jarvis'";
+                    statusText.className = "status-text listening";
+                } else {
+                    statusText.innerText = "Ready.";
+                    statusText.className = "status-text";
+                }
+            };
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function stopSpeaking() {
+            window.speechSynthesis.cancel();
+            if (isAlwaysListening) {
+                statusText.innerText = "Listening... Say 'Jarvis'";
+                statusText.className = "status-text listening";
+            } else {
+                statusText.innerText = "Ready.";
+                statusText.className = "status-text";
+            }
+        }
+    </script>
+</body>
+</html>
