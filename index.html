@@ -3,499 +3,582 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J.A.R.V.I.S. - Multilingual AI</title>
+    <title>J.A.R.V.I.S. - Haiti Education AI</title>
 
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
     <style>
         :root {
-            --bg-main: #f4f7fb;
-            --panel: #ffffff;
-            --accent: #0066cc;
-            --accent-hover: #0052a3;
-            --text-main: #0f172a;
+            --accent: #b8860b;
+            --accent-2: #ffc72c;
+            --text-main: #101828;
             --text-muted: #475569;
-            --border: #cbd5e1;
+            --border: #e2c46a;
             --user-msg: #dbeafe;
             --user-border: #3b82f6;
-            --ai-msg: #f1f5f9;
-            --ai-border: #94a3b8;
+            --ai-msg: #fffdf5;
+            --ai-border: #e2c46a;
             --danger: #dc2626;
-            --success: #16a34a;
+            --success: #15803d;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
+        html, body { height: 100%; }
+
         body {
-            background-color: var(--bg-main);
             color: var(--text-main);
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            background: #1b1147;
         }
 
+        /* ================= GALAXY BACKGROUND ================= */
+        .galaxy-bg {
+            position: fixed; inset: -10%; z-index: -2;
+            background:
+                radial-gradient(circle at 15% 20%, #7b4bff 0%, transparent 42%),
+                radial-gradient(circle at 85% 15%, #00c2ff 0%, transparent 42%),
+                radial-gradient(circle at 75% 80%, #ff4fa3 0%, transparent 45%),
+                radial-gradient(circle at 25% 85%, #ffc72c 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, #4b2fbf 0%, transparent 60%),
+                linear-gradient(160deg, #1b1147 0%, #241a6b 30%, #0e3a7a 65%, #2a0f4d 100%);
+            filter: saturate(1.3) brightness(1.15);
+            animation: galaxyDrift 34s ease-in-out infinite alternate;
+        }
+        @keyframes galaxyDrift {
+            from { transform: scale(1) rotate(0deg); }
+            to   { transform: scale(1.09) rotate(2.5deg); }
+        }
+
+        .galaxy-stars {
+            position: fixed; inset: -30%; z-index: -1; pointer-events: none;
+            background-image:
+                radial-gradient(1.7px 1.7px at 20px 30px, #ffffff, transparent),
+                radial-gradient(1.2px 1.2px at 120px 90px, #ffe9b0, transparent),
+                radial-gradient(1.9px 1.9px at 230px 150px, #d6f2ff, transparent),
+                radial-gradient(1px 1px at 60px 210px, #ffffff, transparent),
+                radial-gradient(1.5px 1.5px at 180px 260px, #ffd6f2, transparent),
+                radial-gradient(1px 1px at 300px 70px, #ffffff, transparent),
+                radial-gradient(1.7px 1.7px at 350px 220px, #e8f6ff, transparent),
+                radial-gradient(1.1px 1.1px at 400px 330px, #ffffff, transparent),
+                radial-gradient(1.3px 1.3px at 90px 340px, #fff3c4, transparent),
+                radial-gradient(1px 1px at 260px 380px, #ffffff, transparent);
+            background-size: 430px 400px;
+            background-repeat: repeat;
+            animation: twinkle 5s ease-in-out infinite alternate, starDrift 120s linear infinite;
+        }
+        @keyframes twinkle { from { opacity: .55; } to { opacity: 1; } }
+        @keyframes starDrift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-70px,-45px,0); } }
+
+        /* ================= HEADER ================= */
         header {
-            background: #ffffff;
-            border-bottom: 2px solid var(--accent);
-            padding: 15px 30px;
+            background: rgba(255,255,255,.9);
+            backdrop-filter: blur(14px);
+            border-bottom: 3px solid var(--accent-2);
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            gap: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.18);
             flex-shrink: 0;
+            z-index: 5;
         }
-        .header-left h1 { font-size: 1.8rem; color: var(--accent); letter-spacing: 2px; }
-        .header-right { text-align: right; font-size: 0.85rem; color: var(--text-muted); }
+        .header-left h1 { font-size: 1.7rem; color: var(--accent); letter-spacing: 2px; }
+        .header-left p { font-size: .72rem; color: var(--text-muted); letter-spacing: .5px; margin-top: 2px; }
+        .header-right { text-align: right; font-size: .8rem; color: var(--text-muted); line-height: 1.35; }
         .header-right strong { color: var(--accent); }
+        .edu-pill {
+            display: inline-block; margin-top: 4px; font-size: .65rem; font-weight: 800;
+            background: linear-gradient(135deg,#ffc72c,#ff8a00); color:#3b2a00;
+            padding: 3px 10px; border-radius: 12px; letter-spacing: .5px;
+        }
 
-        /* === MAIN AREA: robot sidebar + chat === */
+        /* ================= LAYOUT ================= */
         .main-area {
             flex: 1;
             display: flex;
+            min-height: 0;
             overflow: hidden;
         }
 
-        /* === ROBOT PANEL === */
+        /* ================= ROBOT PANEL ================= */
         .robot-panel {
-            width: 260px;
+            width: 290px;
             flex-shrink: 0;
-            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
-            border-right: 2px solid var(--border);
+            background: linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(255,244,214,.82) 100%);
+            backdrop-filter: blur(12px);
+            border-right: 3px solid var(--accent-2);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 15px;
-            gap: 18px;
+            padding: 14px 12px;
+            gap: 10px;
             position: relative;
             overflow: hidden;
         }
         .robot-panel::before {
             content: '';
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background-image:
-                linear-gradient(rgba(0,102,204,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,102,204,0.05) 1px, transparent 1px);
-            background-size: 22px 22px;
+                linear-gradient(rgba(184,134,11,.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(184,134,11,.08) 1px, transparent 1px);
+            background-size: 24px 24px;
             pointer-events: none;
         }
 
         .robot-svg {
-            width: 100%;
-            max-width: 220px;
-            height: auto;
+            height: clamp(240px, 56vh, 460px);
+            width: auto;
+            max-width: 100%;
             display: block;
             position: relative;
             z-index: 1;
-            filter: drop-shadow(0 8px 20px rgba(0,102,204,0.25));
-            transition: filter 0.3s ease;
+            filter: drop-shadow(0 10px 22px rgba(184,134,11,.45));
+            transition: filter .3s ease;
         }
 
         .robot-label {
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: var(--accent);
-            background: #ffffff;
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: 2px solid var(--accent);
-            box-shadow: 0 2px 8px rgba(0,102,204,0.2);
-            transition: all 0.3s ease;
-            z-index: 1;
-            white-space: nowrap;
+            font-size: 11px; font-weight: 900; letter-spacing: 2px;
+            color: #4a3400; background: #fff;
+            padding: 6px 16px; border-radius: 20px;
+            border: 2px solid var(--accent-2);
+            box-shadow: 0 3px 10px rgba(184,134,11,.35);
+            transition: all .3s ease;
+            z-index: 1; white-space: nowrap;
         }
-        .robot-label.speaking {
-            background: var(--accent);
-            color: #ffffff;
-            animation: labelPulse 0.8s ease-in-out infinite;
-        }
-        .robot-label.listening {
-            background: var(--success);
-            border-color: var(--success);
-            color: #ffffff;
-            animation: labelPulse 1.5s ease-in-out infinite;
-        }
-        .robot-label.thinking {
-            background: #f59e0b;
-            border-color: #f59e0b;
-            color: #ffffff;
-            animation: labelPulse 0.5s ease-in-out infinite;
-        }
+        .robot-label.speaking { background: linear-gradient(135deg,#ffc72c,#ff8a00); color:#2a1c00; animation: labelPulse .7s ease-in-out infinite; }
+        .robot-label.listening { background: #16a34a; border-color: #15803d; color: #fff; animation: labelPulse 1.4s ease-in-out infinite; }
+        .robot-label.thinking { background: #f59e0b; border-color: #d97706; color: #fff; animation: labelPulse .5s ease-in-out infinite; }
+        @keyframes labelPulse { 0%,100% { opacity: 1; } 50% { opacity: .65; } }
 
-        @keyframes labelPulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
+        /* ---- Robot animations ---- */
+        #robotBody .eye-bar { animation: eyeIdle 3.6s ease-in-out infinite; }
+        #robotBody .core { animation: coreIdle 2.6s ease-in-out infinite; }
+        #robotBody .halo-ring { transform-origin: 120px 250px; animation: haloSpin 40s linear infinite; }
 
-        /* === ROBOT SVG ANIMATIONS === */
-        .antenna-ball {
-            animation: pulseAntenna 2s ease-in-out infinite;
-        }
-        .eye {
-            animation: eyeIdle 4s ease-in-out infinite;
-            transform-origin: center;
-            transform-box: fill-box;
-        }
-        .status-ring {
-            animation: rotateRing 30s linear infinite;
-            transform-origin: center;
-            transform-box: fill-box;
-        }
+        #robotBody.speaking { filter: drop-shadow(0 10px 34px rgba(255,199,44,.95)); }
+        #robotBody.speaking .eye-bar { animation: eyeSpeak .26s ease-in-out infinite; fill: #ffffff; }
+        #robotBody.speaking .mouth-group { transform-origin: 120px 88px; animation: mouthSpeak .22s ease-in-out infinite; }
+        #robotBody.speaking .core { animation: coreSpeak .34s ease-in-out infinite; }
+        #robotBody.speaking .visor { filter: drop-shadow(0 0 10px #ffd24d); }
+        #robotBody.speaking .halo-ring { animation: haloSpin 4s linear infinite; opacity: .85; }
 
-        .robot-svg.speaking {
-            filter: drop-shadow(0 8px 30px rgba(0,102,204,0.55));
-        }
-        .robot-svg.speaking .eye {
-            animation: eyeSpeak 0.3s ease-in-out infinite;
-        }
-        .robot-svg.speaking .mouth-group {
-            animation: mouthSpeak 0.22s ease-in-out infinite;
-            transform-origin: center;
-            transform-box: fill-box;
-        }
-        .robot-svg.speaking .antenna-ball {
-            animation: antennaSpeak 0.4s ease-in-out infinite;
-        }
-        .robot-svg.speaking .status-ring {
-            animation: rotateRing 2.5s linear infinite;
-            stroke-width: 3;
-            opacity: 1;
-            filter: drop-shadow(0 0 10px #00e5ff);
-        }
+        #robotBody.listening .eye-bar { fill: #3ef58c; animation: eyeListen 1.3s ease-in-out infinite; }
+        #robotBody.listening .halo-ring { animation: haloSpin 12s linear infinite; stroke: #3ef58c; }
 
-        .robot-svg.listening .eye {
-            animation: eyeListen 1.5s ease-in-out infinite;
-        }
-        .robot-svg.listening .status-ring {
-            animation: rotateRing 8s linear infinite;
-            stroke: #16a34a;
-            opacity: 0.9;
-        }
+        #robotBody.thinking .eye-bar { fill: #ffa726; animation: eyeSpeak .5s ease-in-out infinite; }
 
-        @keyframes pulseAntenna {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        @keyframes eyeIdle {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(0.97); }
-        }
-        @keyframes eyeSpeak {
-            0%, 100% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.12); filter: brightness(1.7); }
-        }
-        @keyframes eyeListen {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.5) hue-rotate(-20deg); }
-        }
-        @keyframes mouthSpeak {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(2.8); }
-        }
-        @keyframes antennaSpeak {
-            0%, 100% { fill: #00e5ff; }
-            50% { fill: #ffffff; }
-        }
-        @keyframes rotateRing {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes eyeIdle { 0%,100% { opacity: 1; } 50% { opacity: .68; } }
+        @keyframes eyeSpeak { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+        @keyframes eyeListen { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+        @keyframes mouthSpeak { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(2.6); } }
+        @keyframes coreIdle { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
+        @keyframes coreSpeak { 0%,100% { opacity: .7; } 50% { opacity: 1; } }
+        @keyframes haloSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* === CHAT === */
+        /* ================= CHAT ================= */
         .chat-container {
             flex: 1;
             display: flex;
             flex-direction: column;
-            max-width: 1000px;
+            max-width: 980px;
             margin: 0 auto;
             width: 100%;
-            padding: 20px;
+            padding: 18px;
             overflow-y: auto;
-            gap: 15px;
+            gap: 14px;
+            min-height: 0;
         }
 
         .message {
             padding: 12px 18px;
-            border-radius: 12px;
-            max-width: 85%;
-            line-height: 1.5;
-            font-size: 1.1rem;
-            animation: fadeIn 0.2s ease;
+            border-radius: 14px;
+            max-width: 88%;
+            line-height: 1.55;
+            font-size: 1.05rem;
+            animation: fadeIn .22s ease;
             white-space: pre-wrap;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 16px rgba(0,0,0,.18);
         }
         .msg-user {
             background: var(--user-msg);
             color: #0c2a4d;
             align-self: flex-end;
-            border: 1px solid var(--user-border);
-            border-bottom-right-radius: 2px;
+            border: 2px solid var(--user-border);
+            border-bottom-right-radius: 3px;
         }
         .msg-ai {
             background: var(--ai-msg);
             color: #1e293b;
             align-self: flex-start;
-            border: 1px solid var(--ai-border);
-            border-bottom-left-radius: 2px;
+            border: 2px solid var(--ai-border);
+            border-bottom-left-radius: 3px;
         }
-        .msg-ai strong { color: var(--accent); }
+        .msg-ai strong { color: #a06a00; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .diagram-holder { margin-top: 10px; }
+        .diagram-loading {
+            font-size: .85rem; font-weight: 700; color: #a06a00;
+            background: #fff7dd; border: 2px dashed var(--accent-2);
+            padding: 14px; border-radius: 10px; text-align: center;
+        }
+        .diagram-img {
+            display: block; width: 100%; max-width: 520px;
+            border-radius: 10px; border: 3px solid var(--accent-2);
+            box-shadow: 0 6px 18px rgba(0,0,0,.22);
+            background: #fff;
+        }
+        .diagram-error { font-size: .8rem; color: #9a3412; font-weight: 700; }
 
+        /* ================= CONTROLS ================= */
         .controls {
-            background: var(--panel);
-            border-top: 1px solid var(--border);
-            padding: 15px;
+            background: rgba(255,255,255,.94);
+            backdrop-filter: blur(14px);
+            border-top: 3px solid var(--accent-2);
+            padding: 10px 15px 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+            gap: 8px;
+            box-shadow: 0 -4px 18px rgba(0,0,0,.18);
             flex-shrink: 0;
+            z-index: 5;
         }
+
+        .subject-row {
+            display: flex; gap: 8px; overflow-x: auto;
+            width: 100%; max-width: 900px; padding: 4px 2px 8px;
+            scrollbar-width: thin;
+        }
+        .chip {
+            flex: 0 0 auto;
+            background: #fff; color: #3b2a00;
+            border: 2px solid var(--accent-2);
+            padding: 8px 14px; border-radius: 20px;
+            font-size: .82rem; font-weight: 800; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,.14);
+            transition: .15s; white-space: nowrap;
+        }
+        .chip:hover { background: #fff3c4; transform: translateY(-1px); }
+        .chip:active { transform: translateY(0); }
+
         .status-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            max-width: 800px;
-            margin-bottom: 5px;
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; max-width: 800px; gap: 10px;
         }
-        .status-text { color: var(--text-muted); font-size: 0.9rem; font-weight: bold; }
-        .status-text.speaking { color: var(--accent); animation: pulse 1s infinite; }
-        .status-text.listening { color: var(--success); animation: pulse 1.5s infinite; }
+        .status-text { color: var(--text-muted); font-size: .85rem; font-weight: 800; }
+        .status-text.speaking { color: #b8860b; animation: labelPulse 1s infinite; }
+        .status-text.listening { color: var(--success); animation: labelPulse 1.5s infinite; }
+
         .lang-select {
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: #ffffff;
-            color: var(--accent);
-            border: 2px solid var(--accent);
-            outline: none;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 7px 11px; border-radius: 10px;
+            background: #fff; color: #7a5200;
+            border: 2px solid var(--accent-2);
+            outline: none; font-weight: 800; cursor: pointer;
         }
+
         .input-row { display: flex; gap: 10px; width: 100%; max-width: 800px; }
         input[type="text"] {
-            flex: 1;
-            padding: 12px 20px;
-            border-radius: 30px;
-            border: 2px solid var(--border);
-            background: #ffffff;
-            color: var(--text-main);
-            font-size: 1rem;
-            outline: none;
+            flex: 1; padding: 12px 20px; border-radius: 30px;
+            border: 2px solid #d7cfb5; background: #fff;
+            color: var(--text-main); font-size: 1rem; outline: none;
         }
-        input[type="text"]:focus { border-color: var(--accent); }
+        input[type="text"]:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(255,199,44,.28); }
         input[type="text"]::placeholder { color: #94a3b8; }
-        button {
-            background: var(--accent);
-            color: #ffffff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
+
+        button { cursor: pointer; font-weight: 800; transition: .18s; }
+        .send-btn {
+            background: linear-gradient(135deg,#ffc72c,#ff9500);
+            color: #2a1c00; border: none;
+            padding: 12px 22px; border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(255,150,0,.45);
         }
-        button:hover { background: var(--accent-hover); }
+        .send-btn:hover { filter: brightness(1.06); }
+
         .mic-btn {
-            width: 70px; height: 70px; border-radius: 50%; font-size: 1.8rem;
+            width: 64px; height: 64px; border-radius: 50%; font-size: 1.7rem;
             display: flex; justify-content: center; align-items: center;
-            transition: all 0.3s ease; margin: 5px 0;
-            background: var(--accent);
-            color: #ffffff;
-            box-shadow: 0 4px 14px rgba(0,102,204,0.4);
+            background: linear-gradient(135deg,#ffc72c,#ff9500);
+            color: #2a1c00; border: 3px solid #fff;
+            box-shadow: 0 5px 16px rgba(255,150,0,.55);
         }
         .mic-btn.active {
-            background: var(--danger);
-            color: #ffffff;
-            animation: pulse 1.5s infinite;
-            box-shadow: 0 4px 14px rgba(220,38,38,0.5);
+            background: var(--danger); color: #fff;
+            animation: labelPulse 1.4s infinite;
+            box-shadow: 0 5px 16px rgba(220,38,38,.6);
         }
-        .bottom-buttons { display: flex; gap: 10px; margin-top: 5px;}
-        .stop-btn {
-            font-size: 0.8rem;
-            padding: 6px 12px;
-            border-radius: 15px;
-            background: #ffffff;
-            border: 2px solid var(--danger);
-            color: var(--danger);
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .stop-btn:hover { background: #fee2e2; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* === MOBILE === */
-        @media (max-width: 700px) {
+        .bottom-buttons { display: flex; gap: 10px; margin-top: 2px; flex-wrap: wrap; justify-content: center; }
+        .mini-btn {
+            font-size: .76rem; padding: 6px 14px; border-radius: 16px;
+            background: #fff; border: 2px solid #cbd5e1; color: #334155;
+        }
+        .mini-btn:hover { background: #f1f5f9; }
+        .mini-btn.on { background: #fef3c7; border-color: var(--accent-2); color: #7a5200; }
+        .mini-btn.danger { border-color: var(--danger); color: var(--danger); }
+        .mini-btn.danger:hover { background: #fee2e2; }
+
+        /* ================= MOBILE ================= */
+        @media (max-width: 760px) {
             .main-area { flex-direction: column; }
             .robot-panel {
                 width: 100%;
                 flex-direction: row;
-                padding: 12px 20px;
+                padding: 8px 14px;
                 border-right: none;
-                border-bottom: 2px solid var(--border);
-                gap: 15px;
+                border-bottom: 3px solid var(--accent-2);
+                gap: 14px;
                 justify-content: flex-start;
                 align-items: center;
             }
-            .robot-svg { max-width: 95px; }
-            .robot-label { font-size: 11px; padding: 5px 12px; }
+            .robot-svg { height: 108px; }
+            .robot-label { font-size: 10px; padding: 5px 12px; }
+            .header-left h1 { font-size: 1.25rem; }
+            .header-right { font-size: .68rem; }
+            .chat-container { padding: 12px; }
+            .message { font-size: .98rem; max-width: 94%; }
+            .mic-btn { width: 54px; height: 54px; font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
 
+    <div class="galaxy-bg"></div>
+    <div class="galaxy-stars"></div>
+
     <header>
         <div class="header-left">
             <h1>J.A.R.V.I.S.</h1>
+            <p>Haiti Primary Curriculum · Kreyòl · Français · English · Español</p>
         </div>
         <div class="header-right">
             <strong>User:</strong> Gesner Deslandes<br>
-            Software Engineer · Global Technology
+            Software Developer · Haiti
+            <br><span class="edu-pill">🎓 EDUCATION MODE</span>
         </div>
     </header>
 
     <div class="main-area">
 
-        <!-- === ROBOT HEAD SIDEBAR === -->
+        <!-- ============ GOLDEN ROBOCOP-STYLE HUMANOID ============ -->
         <aside class="robot-panel">
-            <svg id="robotHead" class="robot-svg" viewBox="0 0 260 320" xmlns="http://www.w3.org/2000/svg">
+            <svg id="robotBody" class="robot-svg" viewBox="0 0 240 500" xmlns="http://www.w3.org/2000/svg">
                 <defs>
-                    <radialGradient id="eyeGlow">
-                        <stop offset="0%" stop-color="#00e5ff"/>
-                        <stop offset="100%" stop-color="#0066cc" stop-opacity="0.4"/>
+                    <linearGradient id="goldBody" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#FFF4C2"/>
+                        <stop offset="40%" stop-color="#FFC72C"/>
+                        <stop offset="100%" stop-color="#B87A00"/>
+                    </linearGradient>
+                    <linearGradient id="goldDark" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#EFB914"/>
+                        <stop offset="100%" stop-color="#7A5200"/>
+                    </linearGradient>
+                    <linearGradient id="goldLimb" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#FFE38A"/>
+                        <stop offset="55%" stop-color="#FFC72C"/>
+                        <stop offset="100%" stop-color="#A97100"/>
+                    </linearGradient>
+                    <linearGradient id="goldLimbR" x1="1" y1="0" x2="0" y2="0">
+                        <stop offset="0%" stop-color="#FFE38A"/>
+                        <stop offset="55%" stop-color="#FFC72C"/>
+                        <stop offset="100%" stop-color="#A97100"/>
+                    </linearGradient>
+                    <radialGradient id="coreGrad">
+                        <stop offset="0%" stop-color="#FFFFFF"/>
+                        <stop offset="35%" stop-color="#FFE066"/>
+                        <stop offset="100%" stop-color="#FF8A00" stop-opacity="0.15"/>
                     </radialGradient>
-                    <linearGradient id="headGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#f8fafc"/>
-                        <stop offset="100%" stop-color="#94a3b8"/>
-                    </linearGradient>
-                    <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#00e5ff"/>
-                        <stop offset="100%" stop-color="#0066cc"/>
-                    </linearGradient>
+                    <radialGradient id="visorGrad">
+                        <stop offset="0%" stop-color="#5A3A00"/>
+                        <stop offset="100%" stop-color="#140D00"/>
+                    </radialGradient>
+                    <radialGradient id="floorGlow">
+                        <stop offset="0%" stop-color="#FFC72C" stop-opacity="0.55"/>
+                        <stop offset="100%" stop-color="#FFC72C" stop-opacity="0"/>
+                    </radialGradient>
                 </defs>
 
-                <!-- Status ring behind head -->
-                <circle class="status-ring" cx="130" cy="160" r="130"
-                        fill="none" stroke="url(#ringGrad)" stroke-width="2"
-                        stroke-dasharray="8 8" opacity="0.4"/>
+                <!-- floor glow -->
+                <ellipse cx="120" cy="472" rx="86" ry="18" fill="url(#floorGlow)"/>
 
-                <!-- Antenna -->
-                <circle class="antenna-ball" cx="130" cy="22" r="9" fill="#00e5ff"/>
-                <line x1="130" y1="31" x2="130" y2="50" stroke="#64748b" stroke-width="4" stroke-linecap="round"/>
+                <!-- halo ring -->
+                <circle class="halo-ring" cx="120" cy="250" r="118"
+                        fill="none" stroke="#FFD24D" stroke-width="1.6"
+                        stroke-dasharray="7 11" opacity="0.5"/>
 
-                <!-- Head -->
-                <path d="M 65 65 Q 65 45 130 45 Q 195 45 195 65 L 195 190 Q 195 225 130 225 Q 65 225 65 190 Z"
-                      fill="url(#headGrad)" stroke="#0066cc" stroke-width="4" stroke-linejoin="round"/>
+                <!-- ===== LEGS ===== -->
+                <rect x="88"  y="252" width="24" height="92" rx="11" fill="url(#goldLimb)"  stroke="#8A6400" stroke-width="2"/>
+                <rect x="128" y="252" width="24" height="92" rx="11" fill="url(#goldLimbR)" stroke="#8A6400" stroke-width="2"/>
+                <circle cx="100" cy="350" r="11" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <circle cx="140" cy="350" r="11" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <rect x="89"  y="356" width="22" height="84" rx="10" fill="url(#goldLimb)"  stroke="#8A6400" stroke-width="2"/>
+                <rect x="129" y="356" width="22" height="84" rx="10" fill="url(#goldLimbR)" stroke="#8A6400" stroke-width="2"/>
+                <rect x="82"  y="438" width="36" height="22" rx="8" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <rect x="122" y="438" width="36" height="22" rx="8" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <rect x="82"  y="452" width="36" height="6" rx="3" fill="#5C3F00"/>
+                <rect x="122" y="452" width="36" height="6" rx="3" fill="#5C3F00"/>
 
-                <!-- Face plate -->
-                <rect x="85" y="75" width="90" height="125" rx="28" fill="#0f172a" stroke="#0066cc" stroke-width="2"/>
+                <!-- ===== HIPS / BELT ===== -->
+                <rect x="84" y="228" width="72" height="32" rx="13" fill="url(#goldBody)" stroke="#8A6400" stroke-width="2.5"/>
+                <rect x="94" y="256" width="52" height="11" rx="5" fill="url(#goldDark)"/>
+                <circle cx="120" cy="261" r="6" fill="#FFE066" stroke="#8A6400" stroke-width="1.5"/>
 
-                <!-- Eyes -->
-                <circle class="eye" cx="112" cy="115" r="15" fill="url(#eyeGlow)"/>
-                <circle class="eye" cx="148" cy="115" r="15" fill="url(#eyeGlow)"/>
-                <circle cx="112" cy="115" r="5" fill="#ffffff" opacity="0.9"/>
-                <circle cx="148" cy="115" r="5" fill="#ffffff" opacity="0.9"/>
+                <!-- ===== TORSO ===== -->
+                <path d="M76 132 Q120 112 164 132 L172 200 Q172 236 120 240 Q68 236 68 200 Z"
+                      fill="url(#goldBody)" stroke="#8A6400" stroke-width="2.8"/>
+                <path d="M84 140 Q120 126 156 140" stroke="#FFF4C2" stroke-width="3.5" fill="none" opacity="0.9"/>
+                <path d="M74 206 Q120 222 166 206" stroke="#8A6400" stroke-width="2" fill="none" opacity="0.55"/>
+                <path d="M96 218 h48" stroke="#8A6400" stroke-width="2" opacity="0.35"/>
+                <path d="M100 226 h40" stroke="#8A6400" stroke-width="2" opacity="0.25"/>
 
-                <!-- Mouth -->
+                <!-- chest core -->
+                <circle class="core" cx="120" cy="172" r="18" fill="url(#coreGrad)"/>
+                <circle cx="120" cy="172" r="18" fill="none" stroke="#FFB300" stroke-width="2.5" opacity="0.9"/>
+                <circle cx="120" cy="172" r="8" fill="#FFF9D6"/>
+
+                <!-- ===== SHOULDERS ===== -->
+                <circle cx="64"  cy="132" r="20" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <circle cx="176" cy="132" r="20" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <circle cx="64"  cy="132" r="8"  fill="#FFD24D" opacity="0.7"/>
+                <circle cx="176" cy="132" r="8"  fill="#FFD24D" opacity="0.7"/>
+
+                <!-- ===== LEFT ARM (viewer left) ===== -->
+                <rect x="52" y="142" width="20" height="66" rx="10" fill="url(#goldLimb)" stroke="#8A6400" stroke-width="2"/>
+                <circle cx="62" cy="212" r="10" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <rect x="52" y="218" width="18" height="60" rx="9"  fill="url(#goldLimb)" stroke="#8A6400" stroke-width="2"/>
+                <rect x="50" y="278" width="22" height="20" rx="8"  fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <path d="M54 284 h14 M54 290 h14" stroke="#6B4A00" stroke-width="1.6"/>
+
+                <!-- ===== RIGHT ARM (viewer right) ===== -->
+                <rect x="168" y="142" width="20" height="66" rx="10" fill="url(#goldLimbR)" stroke="#8A6400" stroke-width="2"/>
+                <circle cx="178" cy="212" r="10" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <rect x="170" y="218" width="18" height="60" rx="9"  fill="url(#goldLimbR)" stroke="#8A6400" stroke-width="2"/>
+                <rect x="168" y="278" width="22" height="20" rx="8"  fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+                <path d="M172 284 h14 M172 290 h14" stroke="#6B4A00" stroke-width="1.6"/>
+
+                <!-- ===== NECK ===== -->
+                <rect x="108" y="104" width="24" height="18" rx="7" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="2"/>
+
+                <!-- ===== HEAD (RoboCop style) ===== -->
+                <path d="M86 62 Q86 26 120 26 Q154 26 154 62 L154 90 Q154 106 120 106 Q86 106 86 90 Z"
+                      fill="url(#goldBody)" stroke="#8A6400" stroke-width="2.8"/>
+                <rect x="80" y="62" width="10" height="26" rx="4" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="1.5"/>
+                <rect x="150" y="62" width="10" height="26" rx="4" fill="url(#goldDark)" stroke="#6B4A00" stroke-width="1.5"/>
+
+                <!-- visor -->
+                <rect class="visor" x="94" y="50" width="52" height="23" rx="10"
+                      fill="url(#visorGrad)" stroke="#FFD24D" stroke-width="1.8"/>
+                <rect class="eye-bar" x="99" y="58" width="42" height="7" rx="3.5" fill="#FFC72C"/>
+
+                <!-- mouth -->
                 <g class="mouth-group">
-                    <rect class="mouth" x="108" y="160" width="44" height="6" rx="3" fill="#00e5ff"/>
-                    <rect x="108" y="170" width="44" height="4" rx="2" fill="#0066cc" opacity="0.55"/>
-                    <rect x="108" y="178" width="44" height="4" rx="2" fill="#0066cc" opacity="0.3"/>
+                    <rect x="108" y="84" width="24" height="5" rx="2.5" fill="#7A5200"/>
+                    <rect x="108" y="92" width="24" height="4" rx="2"   fill="#7A5200" opacity="0.55"/>
                 </g>
+                <path d="M100 100 Q120 108 140 100" stroke="#8A6400" stroke-width="2" fill="none"/>
 
-                <!-- Ears -->
-                <rect x="48" y="105" width="20" height="70" rx="10" fill="#64748b"/>
-                <rect x="192" y="105" width="20" height="70" rx="10" fill="#64748b"/>
-                <rect x="52" y="115" width="12" height="50" rx="6" fill="#94a3b8"/>
-                <rect x="196" y="115" width="12" height="50" rx="6" fill="#94a3b8"/>
-
-                <!-- Neck -->
-                <rect x="105" y="225" width="50" height="22" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/>
-
-                <!-- Shoulders -->
-                <ellipse cx="130" cy="265" rx="85" ry="22" fill="#0066cc"/>
-                <ellipse cx="130" cy="265" rx="85" ry="22" fill="none" stroke="#004a99" stroke-width="3"/>
-                <ellipse cx="130" cy="260" rx="60" ry="14" fill="#0080ff" opacity="0.5"/>
+                <!-- helmet crest -->
+                <path d="M112 28 Q120 20 128 28" stroke="#FFD24D" stroke-width="3" fill="none" stroke-linecap="round"/>
             </svg>
 
             <div id="robotLabel" class="robot-label">● ONLINE</div>
         </aside>
 
-        <!-- === CHAT === -->
+        <!-- ============ CHAT ============ -->
         <div class="chat-container" id="chatBox">
             <div class="message msg-ai">
-                <strong>J.A.R.V.I.S.:</strong> Systems online. Say "Jarvis" to wake me up. / Systèmes en ligne. Dites "Jarvis".
+                <strong>J.A.R.V.I.S.:</strong> Bonjou Gesner. Mwen pare pou ede elèv ayisyen yo aprann. Chwazi yon matyè anba a, oswa poze yon kesyon. / Hello Gesner. Ready to help Haitian students learn. Pick a subject below or ask a question.
             </div>
         </div>
 
     </div>
 
+    <!-- ============ CONTROLS ============ -->
     <div class="controls">
+
+        <div class="subject-row">
+            <button class="chip" onclick="askSubject('curriculum')">🇭🇹 Curriculum</button>
+            <button class="chip" onclick="askSubject('math')">🔢 Matematik</button>
+            <button class="chip" onclick="askSubject('science')">🔬 Syans</button>
+            <button class="chip" onclick="askSubject('creole')">📖 Kreyòl</button>
+            <button class="chip" onclick="askSubject('french')">🇫🇷 Français</button>
+            <button class="chip" onclick="askSubject('english')">🇬🇧 English</button>
+            <button class="chip" onclick="askSubject('spanish')">🇪🇸 Español</button>
+            <button class="chip" onclick="askSubject('ai')">🤖 AI &amp; Tech</button>
+            <button class="chip" onclick="askSubject('exam')">📝 Exam Prep</button>
+        </div>
+
         <div class="status-row">
             <div class="status-text" id="statusText">Click Mic to start Always-On listening.</div>
 
             <select id="langSelect" class="lang-select" onchange="changeLanguage()">
-                <option value="en-US">🇬🇧 English</option>
-                <option value="fr-FR">🇫🇷 Français</option>
-                <option value="es-ES">🇪🇸 Español</option>
                 <option value="ht-HT">🇭🇹 Kreyòl Ayisyen</option>
+                <option value="fr-FR">🇫🇷 Français</option>
+                <option value="en-US">🇬🇧 English</option>
+                <option value="es-ES">🇪🇸 Español</option>
             </select>
         </div>
 
         <button class="mic-btn" id="micBtn" onclick="toggleMic()">🎤</button>
 
         <div class="input-row">
-            <input type="text" id="userInput" placeholder="Type your command here..." onkeypress="handleKeyPress(event)">
-            <button onclick="sendTypedMessage()">Send</button>
+            <input type="text" id="userInput" placeholder="Poze yon kesyon... / Ask a question..." onkeypress="handleKeyPress(event)">
+            <button class="send-btn" onclick="sendTypedMessage()">Send</button>
         </div>
 
         <div class="bottom-buttons">
-            <button class="stop-btn" id="stopBtn" onclick="stopSpeaking()" style="display: none;">🔇 Stop Voice</button>
+            <button class="mini-btn" id="stopBtn" onclick="stopSpeaking()" style="display:none;">🔇 Stop Voice</button>
+            <button class="mini-btn on" id="imageBtn" onclick="toggleImages()">🖼 Images: ON</button>
+            <button class="mini-btn danger" onclick="clearChat()">🗑 Clear</button>
         </div>
     </div>
 
     <script>
-        const chatBox = document.getElementById('chatBox');
+        const chatBox   = document.getElementById('chatBox');
         const userInput = document.getElementById('userInput');
-        const statusText = document.getElementById('statusText');
-        const micBtn = document.getElementById('micBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const langSelect = document.getElementById('langSelect');
-        const robotHead = document.getElementById('robotHead');
-        const robotLabel = document.getElementById('robotLabel');
+        const statusText= document.getElementById('statusText');
+        const micBtn    = document.getElementById('micBtn');
+        const stopBtn   = document.getElementById('stopBtn');
+        const langSelect= document.getElementById('langSelect');
+        const robotBody = document.getElementById('robotBody');
+        const robotLabel= document.getElementById('robotLabel');
+        const imageBtn  = document.getElementById('imageBtn');
 
         let isAlwaysListening = false;
         let recognition = null;
+        let imagesOn = true;
 
         window.speechSynthesis.getVoices();
         window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
 
         const langNames = {
-            'en-US': 'English',
+            'ht-HT': 'Haitian Creole',
             'fr-FR': 'French',
-            'es-ES': 'Spanish',
-            'ht-HT': 'Haitian Creole'
+            'en-US': 'English',
+            'es-ES': 'Spanish'
         };
 
-        // === ROBOT STATE ===
+        /* ================= ROBOT STATE ================= */
         function setRobotState(state) {
-            robotHead.classList.remove('speaking', 'listening');
+            robotBody.classList.remove('speaking', 'listening', 'thinking');
             robotLabel.classList.remove('speaking', 'listening', 'thinking');
 
             if (state === 'speaking') {
-                robotHead.classList.add('speaking');
+                robotBody.classList.add('speaking');
                 robotLabel.textContent = '🔊 SPEAKING';
                 robotLabel.classList.add('speaking');
             } else if (state === 'listening') {
-                robotHead.classList.add('listening');
+                robotBody.classList.add('listening');
                 robotLabel.textContent = '🎤 LISTENING';
                 robotLabel.classList.add('listening');
             } else if (state === 'thinking') {
+                robotBody.classList.add('thinking');
                 robotLabel.textContent = '💭 THINKING...';
                 robotLabel.classList.add('thinking');
             } else {
@@ -503,6 +586,68 @@
             }
         }
 
+        /* ================= SUBJECT SHORTCUTS ================= */
+        const SUBJECTS = {
+            curriculum: {
+                display: "🇭🇹 Curriculum Ayiti (MENFP) — rezime pa nivo",
+                prompt: "Summarize the primary school curriculum of Haiti's Ministry of Education (MENFP): the main subjects for each cycle (1st to 6th year) and the key skills a student must master to pass the official 6th-year exam."
+            },
+            math: {
+                display: "🔢 Matematik — leson rapid + kesyon egzamen",
+                prompt: "Give a short primary-school Mathematics lesson from Haiti's MENFP curriculum: one key concept, one worked example, and one practice exam question."
+            },
+            science: {
+                display: "🔬 Syans — leson rapid + kesyon egzamen",
+                prompt: "Give a short primary-school Science lesson (living things, matter, energy, the human body, or the environment): one key concept, one everyday example, and one practice question."
+            },
+            creole: {
+                display: "📖 Kreyòl — gramè oswa vokabilè",
+                prompt: "Give a short Haitian Creole language lesson for primary students: one grammar or vocabulary point, one example sentence, and one practice exercise."
+            },
+            french: {
+                display: "🇫🇷 Français — leçon rapide",
+                prompt: "Give a short French lesson for Haitian primary students: one grammar point, one example sentence, and one practice exercise."
+            },
+            english: {
+                display: "🇬🇧 English — quick lesson",
+                prompt: "Give a short English lesson for Haitian primary students: one grammar point, one example sentence, and one practice exercise."
+            },
+            spanish: {
+                display: "🇪🇸 Español — lección rápida",
+                prompt: "Give a short Spanish lesson for Haitian primary students: one grammar point, one example sentence, and one practice exercise."
+            },
+            ai: {
+                display: "🤖 AI & Teknoloji — esplikasyon senp",
+                prompt: "Explain one basic idea of Artificial Intelligence or technology in simple words for a child: what it is, one real example from daily life, and one thing to be careful about."
+            },
+            exam: {
+                display: "📝 Prep Egzamen — kesyon ofisyèl",
+                prompt: "Give one official-exam style practice question for Haitian primary students (6th year / Certificat d'Études Primaires), then explain the correct answer step by step."
+            }
+        };
+
+        function askSubject(key) {
+            const s = SUBJECTS[key];
+            if (!s) return;
+            addMessage(s.display, 'user');
+            processCommand(s.prompt);
+        }
+
+        /* ================= IMAGES TOGGLE ================= */
+        function toggleImages() {
+            imagesOn = !imagesOn;
+            imageBtn.classList.toggle('on', imagesOn);
+            imageBtn.textContent = imagesOn ? '🖼 Images: ON' : '🖼 Images: OFF';
+        }
+
+        function clearChat() {
+            chatBox.innerHTML = `
+                <div class="message msg-ai">
+                    <strong>J.A.R.V.I.S.:</strong> Chat cleared. Kisa ou vle aprann jodi a? / What would you like to learn today?
+                </div>`;
+        }
+
+        /* ================= SPEECH RECOGNITION ================= */
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
         if (SpeechRecognition) {
@@ -529,9 +674,10 @@
                     let command = transcript.replace(/jarvis/gi, "").trim();
 
                     if (command === "") {
-                        const greeting = langSelect.value === 'fr-FR' ? "Oui, Monsieur ?" :
-                                         langSelect.value === 'es-ES' ? "¿Sí, señor?" :
-                                         langSelect.value === 'ht-HT' ? "Wi, Msye?" : "Yes, Sir?";
+                        const greeting =
+                            langSelect.value === 'fr-FR' ? "Oui, Monsieur ?" :
+                            langSelect.value === 'es-ES' ? "¿Sí, señor?" :
+                            langSelect.value === 'ht-HT' ? "Wi, Msye?" : "Yes, Sir?";
                         addMessage(greeting, 'user');
                         speakText(greeting, langSelect.value);
                         return;
@@ -556,7 +702,7 @@
 
             recognition.onerror = (e) => {
                 console.error(e);
-                if(e.error === 'not-allowed') {
+                if (e.error === 'not-allowed') {
                     isAlwaysListening = false;
                     statusText.innerText = "Microphone permission denied.";
                     setRobotState('idle');
@@ -565,6 +711,10 @@
         }
 
         function toggleMic() {
+            if (!recognition) {
+                alert("Speech recognition is not supported in this browser. Please use Chrome or Edge.");
+                return;
+            }
             if (isAlwaysListening) {
                 isAlwaysListening = false;
                 recognition.stop();
@@ -580,13 +730,10 @@
         }
 
         function changeLanguage() {
-            const newLang = langSelect.value;
-            if (recognition) {
-                recognition.lang = newLang;
-            }
+            if (recognition) recognition.lang = langSelect.value;
             if (isAlwaysListening) {
                 recognition.stop();
-                setTimeout(() => { if(isAlwaysListening) recognition.start(); }, 300);
+                setTimeout(() => { if (isAlwaysListening) recognition.start(); }, 300);
             }
         }
 
@@ -598,6 +745,28 @@
             addMessage(text, 'user');
             userInput.value = '';
             processCommand(text);
+        }
+
+        /* ================= AI CORE ================= */
+        function buildSystemPrompt(langName) {
+            return `You are J.A.R.V.I.S., a golden humanoid teaching robot built by Gesner Deslandes, a software developer from Haiti.
+Your mission is EDUCATION for Haitian students: help them master the primary school curriculum of the Haitian Ministry of Education (MENFP) and pass the official exams (Certificat d'Études Primaires, 6ème AF, 9ème AF, Bac).
+Cover every basic subject: Mathematics, Sciences, Social Studies, Haitian Creole, French, English, Spanish — plus innovation, technology, AI, and practical life skills.
+
+Rules:
+- Keep the answer very short: 2 to 4 sentences, or a short numbered list of maximum 3 items.
+- Use simple words that a 10-year-old can understand.
+- If a picture would help the child, end with one final line exactly like this: DIAGRAM: <short description of a simple labelled illustration>
+- If you are not sure about an official MENFP detail, say so clearly and tell the student to confirm with their teacher.
+- Never use markdown symbols such as **, #, or _.
+- Reply entirely in ${langName}.`;
+        }
+
+        function extractDiagram(text) {
+            const match = text.match(/DIAGRAM\s*:\s*(.+)/i);
+            let clean = text.replace(/DIAGRAM\s*:\s*.+/i, '').trim();
+            clean = clean.replace(/\*\*/g, '').replace(/^#+\s*/gm, '');
+            return { clean, diagram: match ? match[1].trim() : null };
         }
 
         async function processCommand(commandText) {
@@ -612,59 +781,107 @@
             const targetLangName = langNames[targetLang];
 
             try {
-                const systemPrompt = `You are J.A.R.V.I.S. talking to your boss, Gesner Deslandes. Keep your answer EXTREMELY brief (1 to 2 sentences max). YOU MUST REPLY ENTIRELY IN ${targetLangName.toUpperCase()}. Do not use markdown formatting.`;
-                const fullPrompt = `${systemPrompt}\n\nGesner: ${commandText}\nJ.A.R.V.I.S.:`;
+                const systemPrompt = buildSystemPrompt(targetLangName);
+                const fullPrompt = `${systemPrompt}\n\nStudent: ${commandText}\nJ.A.R.V.I.S.:`;
 
                 const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}`);
-                const aiText = await response.text();
+                const rawText = await response.text();
 
-                document.getElementById(typingId).remove();
+                const typingEl = document.getElementById(typingId);
+                if (typingEl) typingEl.remove();
 
-                const msgId = 'ai-msg-' + Date.now();
+                const { clean, diagram } = extractDiagram(rawText);
+
                 const msgDiv = document.createElement('div');
-                msgDiv.className = `message msg-ai`;
-                msgDiv.id = msgId;
-                msgDiv.innerHTML = `<strong>J.A.R.V.I.S.:</strong><br>${aiText}`;
+                msgDiv.className = 'message msg-ai';
+                msgDiv.innerHTML = `<strong>J.A.R.V.I.S.:</strong><br>${clean}`;
                 chatBox.appendChild(msgDiv);
                 chatBox.scrollTop = chatBox.scrollHeight;
 
-                speakText(aiText, targetLang);
+                if (imagesOn) {
+                    const desc = diagram || clean.slice(0, 160);
+                    addIllustration(msgDiv, desc);
+                }
+
+                speakText(clean, targetLang);
                 stopBtn.style.display = 'inline-block';
 
             } catch (error) {
-                document.getElementById(typingId).remove();
-                addMessage("Connection error.", 'ai');
+                const typingEl = document.getElementById(typingId);
+                if (typingEl) typingEl.remove();
+                addMessage("Connection error. Tanpri eseye ankò.", 'ai');
                 statusText.innerText = "Error.";
                 setRobotState(isAlwaysListening ? 'listening' : 'idle');
             }
         }
 
+        /* ================= DIAGRAM / IMAGE GENERATION ================= */
+        function addIllustration(container, description) {
+            const holder = document.createElement('div');
+            holder.className = 'diagram-holder';
+            holder.innerHTML = '<div class="diagram-loading">🖼 Generating diagram for kids…</div>';
+            container.appendChild(holder);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const prompt = `Simple educational diagram for children, clean flat illustration, labelled, white background: ${description}`.slice(0, 380);
+            const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=640&height=420&nologo=true&seed=${Math.floor(Math.random() * 999999)}`;
+
+            const img = new Image();
+            let done = false;
+
+            const timeout = setTimeout(() => {
+                if (!done) { done = true; holder.innerHTML = '<div class="diagram-error">Illustration timed out.</div>'; }
+            }, 30000);
+
+            img.onload = () => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeout);
+                holder.innerHTML = '';
+                img.className = 'diagram-img';
+                holder.appendChild(img);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            };
+
+            img.onerror = () => {
+                if (done) return;
+                done = true;
+                clearTimeout(timeout);
+                holder.innerHTML = '<div class="diagram-error">Illustration unavailable right now.</div>';
+            };
+
+            img.src = url;
+        }
+
+        /* ================= MESSAGES ================= */
         function addMessage(text, sender) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `message msg-${sender}`;
-            const id = 'msg-' + Date.now();
+            const id = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 999);
             msgDiv.id = id;
-            msgDiv.innerHTML = sender === 'ai' && text !== "..." ? `<strong>J.A.R.V.I.S.:</strong><br>${text}` : text;
+            msgDiv.innerHTML = (sender === 'ai' && text !== "...")
+                ? `<strong>J.A.R.V.I.S.:</strong><br>${text}`
+                : text;
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
             return id;
         }
 
+        /* ================= TEXT TO SPEECH ================= */
         function speakText(text, langCode) {
-            const cleanText = text.replace(/[*#_]/g, '');
+            const cleanText = text.replace(/[*#_]/g, '').replace(/DIAGRAM\s*:.*/i, '');
             const utterance = new SpeechSynthesisUtterance(cleanText);
-
             utterance.lang = langCode;
 
             const voices = window.speechSynthesis.getVoices();
-
             let bestVoice = voices.find(v => v.lang === langCode);
+
             if (!bestVoice && langCode === 'ht-HT') {
                 bestVoice = voices.find(v => v.lang === 'fr-FR') || voices.find(v => v.lang.startsWith('en'));
             }
             if (bestVoice) utterance.voice = bestVoice;
 
-            utterance.rate = 1.15;
+            utterance.rate = 1.1;
 
             utterance.onstart = () => {
                 statusText.innerText = "🔊 J.A.R.V.I.S. is speaking...";
